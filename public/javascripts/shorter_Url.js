@@ -13,5 +13,4 @@ function link(shorter) {
   return newLink
 }
 
-
 module.exports = { link }
