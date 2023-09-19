@@ -35,13 +35,26 @@ app.get('/link', (req, res) => {
 
 app.post('/link', (req, res) => {
   const originalLink = req.body
-  let shorterLink = shorterURL.link(originalLink);
-  shortUrl.create({ fullLink: originalLink.link, newLink: shorterLink })
-  res.render('success', { shorterLink })
-  // shortUrl.findOne({ newLink: shorterLink }).then(link => {
+  let shorterLink = shorterURL.link(originalLink)
 
-  //   console.log(link)
-  // })
+  console.log(originalLink.link)
+  shortUrl.findOne({ fullLink: originalLink.link }).then(link => {
+    if (!link) {
+      console.log("error")
+      shortUrl.create({ fullLink: originalLink.link, newLink: shorterLink }).then(link => {
+        console.log(link)
+      }).catch(err => {
+        console.log(err)
+      })
+    } else {
+      shorterLink = link.newLink
+      console.log("success", link)
+    }
+    res.render('success', { shorterLink })
+  }).catch(err => {
+    console.log(err)
+  })
+
 })
 
 app.get('/:randomLetter', (req, res) => {
@@ -51,6 +64,8 @@ app.get('/:randomLetter', (req, res) => {
 
   shortUrl.findOne({ newLink: newLink }).then(link => {
     res.redirect(link.fullLink)
+  }).catch(err => {
+    console.log(err)
   })
 
 })
